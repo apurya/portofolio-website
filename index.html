@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/src/img/logo/purya.png" />
+    <link rel="apple-touch-icon" href="/src/img/logo/purya.png" />
+
+    <!-- Judul & deskripsi utama -->
+    <title>Portofolio - Aditiya Purya</title>
+    <meta
+      name="description"
+      content="Portofolio Aditiya Purya, lulusan D3 Manajemen Informatika."
+    />
+    <meta name="author" content="Aditiya Purya" />
+
+    <!-- Open Graph (untuk preview di WhatsApp, LinkedIn, Facebook, Telegram, dll) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Portofolio - Aditiya Purya" />
+    <meta
+      property="og:description"
+      content="Portofolio Aditiya Purya, lulusan D3 Manajemen Informatika."
+    />
+    <meta property="og:image" content="https://purya.vercel.app/src/img/purya.png" />
+    <meta property="og:url" content="https://purya.vercel.app" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="Aditiya Purya Portfolio" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Portofolio - Aditiya Purya" />
+    <meta
+      name="twitter:description"
+      content="Portofolio Aditiya Purya."
+    />
+    <meta name="twitter:image" content="https://purya.vercel.app/src/img/purya.png" />
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet">
+
+    <script>
+      (function () {
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
