@@ -59,7 +59,7 @@ const translations = {
     // Projects
     projects_heading: "Proyek",   
     projects_personal: "Proyek Pribadi",
-    projects_view: "Lihat Project",
+    projects_view: "Lihat Proyek",
 
     // Contact
     contact_heading: "Hubungi Saya",

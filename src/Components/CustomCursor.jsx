@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
+// Warna aksen brand MotherDuck — dipakai bergiliran untuk efek klik,
+// selaras dengan cara ilustrasi situs memakai warna cerah secara selektif.
+const BRAND_ACCENTS = ['#FEDE00', '#FF7168', '#15AA98', '#70C1FE'];
+
 export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
@@ -41,10 +45,11 @@ export default function CustomCursor() {
 
     const handleLeave = () => setIsVisible(false);
 
-    // Efek animasi saat double click
+    // Efek animasi saat double click — warna aksen dipilih acak dari palet brand
     const handleDoubleClick = (e) => {
       const id = Date.now() + Math.random();
-      setBursts((prev) => [...prev, { id, x: e.clientX, y: e.clientY }]);
+      const color = BRAND_ACCENTS[Math.floor(Math.random() * BRAND_ACCENTS.length)];
+      setBursts((prev) => [...prev, { id, x: e.clientX, y: e.clientY, color }]);
 
       // Bersihkan burst setelah animasi selesai (600ms)
       setTimeout(() => {
@@ -72,34 +77,41 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Titik tengah: charcoal netral, jadi kuning saat menyentuh elemen interaktif —
+          mengikuti kontras isi/border yang sama dengan .btn-primary */}
       <div
         ref={dotRef}
-        className={`fixed top-0 left-0 z-[9999] pointer-events-none rounded-full bg-primary transition-opacity duration-200 ${
+        className={`fixed top-0 left-0 z-[9999] pointer-events-none rounded-full transition-colors duration-200 ${
           isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
+        } ${isPointer ? 'bg-primary' : 'bg-dark dark:bg-white'}`}
         style={{ width: 8, height: 8 }}
       />
+      {/* Ring pengikut: border charcoal tipis + bayangan offset kecil selaras
+          dengan bahasa "hard-shadow" pada .cert-card/.btn-primary. Saat di atas
+          elemen interaktif, ring berubah jadi isi kuning + border charcoal tebal. */}
       <div
         ref={ringRef}
         className={`fixed top-0 left-0 z-[9998] pointer-events-none rounded-full border-2 transition-all duration-200 ease-out ${
           isVisible ? 'opacity-100' : 'opacity-0'
-        } ${isPointer ? 'border-primary bg-primary/10' : 'border-slate-400/60'}`}
+        } ${isPointer ? 'border-dark bg-primary/20 dark:border-white' : 'border-dark/30 dark:border-white/30'}`}
         style={{
           width: isPointer ? 52 : 32,
           height: isPointer ? 52 : 32,
+          boxShadow: isPointer ? '3px 3px 0 0 rgba(56,56,56,0.45)' : '2px 2px 0 0 rgba(56,56,56,0.25)',
         }}
       />
 
-      {/* Efek ripple saat double click */}
+      {/* Efek ripple saat double click — cincin warna aksen brand, gantian tiap klik */}
       {bursts.map((burst) => (
         <div
           key={burst.id}
-          className="fixed top-0 left-0 z-[9997] pointer-events-none rounded-full border-2 border-primary cursor-burst"
+          className="fixed top-0 left-0 z-[9997] pointer-events-none rounded-full border-2 cursor-burst"
           style={{
             left: burst.x,
             top: burst.y,
             width: 48,
             height: 48,
+            borderColor: burst.color,
           }}
         />
       ))}

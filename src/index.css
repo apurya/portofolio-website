@@ -62,11 +62,11 @@ section[id] {
   }
 
   .btn-primary {
-    @apply btn-wow inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold text-dark bg-primary rounded-full transition-all duration-300 hover:-translate-y-0.5;
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold text-dark bg-primary rounded-full border-2 border-dark dark:border-dark transition-all duration-200 ease-out;
   }
 
   .btn-secondary {
-    @apply btn-wow inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold rounded-full border-2 border-dark text-dark dark:border-white dark:text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-dark hover:text-white dark:hover:bg-white dark:hover:text-dark;
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold rounded-full border-2 border-dark text-dark bg-transparent dark:border-white dark:text-white transition-all duration-200 ease-out hover:bg-dark hover:text-white dark:hover:bg-white dark:hover:text-dark;
   }
 
   .card-surface {
@@ -241,52 +241,40 @@ section[id] {
 }
 }
 
-.btn-wow {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background-color 0.3s ease, color 0.3s ease;
-  will-change: transform;
-}
-.btn-wow::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.65s ease;
-  z-index: 1;
-  pointer-events: none;
-}
-.btn-wow:hover::before {
-  left: 125%;
-}
-.btn-wow:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 12px 24px -8px rgba(254, 222, 0, 0.5);
-}
-.btn-wow:active {
-  transform: translateY(-1px) scale(0.95);
-  transition-duration: 0.12s;
-  box-shadow: 0 4px 10px -4px rgba(254, 222, 0, 0.4);
-}
-.btn-wow:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(254, 222, 0, 0.45), 0 12px 24px -8px rgba(254, 222, 0, 0.5);
-}
-
-/* Tombol download resume: flat, tanpa glow, selaras tema MotherDuck */
+/* Tombol hero (download resume & contact): flat, bordered, rounded-full —
+   memakai bahasa "offset hard-shadow" yang sama dengan .cert-card/.cert-seal
+   supaya selaras dengan tema MotherDuck (playful tapi rapi, bukan glossy). */
 .btn-primary,
-.btn-primary:hover,
-.btn-primary:active {
-  box-shadow: none;
+.btn-secondary {
+  box-shadow: 4px 4px 0 0 rgba(56, 56, 56, 0.9);
 }
-.btn-primary:focus-visible {
+.dark .btn-primary,
+.dark .btn-secondary {
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.6);
+}
+.btn-primary:hover,
+.btn-secondary:hover {
+  transform: translate(-2px, -4px);
+  box-shadow: 6px 8px 0 0 rgba(56, 56, 56, 0.9);
+}
+.dark .btn-primary:hover,
+.dark .btn-secondary:hover {
+  box-shadow: 6px 8px 0 0 rgba(0, 0, 0, 0.65);
+}
+.btn-primary:active,
+.btn-secondary:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 0 rgba(56, 56, 56, 0.9);
+  transition-duration: 0.1s;
+}
+.dark .btn-primary:active,
+.dark .btn-secondary:active {
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.6);
+}
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(56, 56, 56, 0.25);
+  box-shadow: 0 0 0 3px rgba(254, 222, 0, 0.5), 4px 4px 0 0 rgba(56, 56, 56, 0.9);
 }
 
 @keyframes float-computer {

@@ -28,7 +28,12 @@ export default function Greetings() {
 
       <div className="flex flex-col items-center gap-4 sm:flex-row md:justify-start">
         <a href={resume} download className="w-full sm:w-auto btn-primary">
-          📄 {t('greet_download')}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M12 3v12" />
+            <path d="M7 10l5 5 5-5" />
+            <path d="M4 19h16" />
+          </svg>
+          {t('greet_download')}
         </a>
         <a href="#contact" className="w-full sm:w-auto btn-secondary">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">

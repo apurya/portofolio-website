@@ -68,19 +68,33 @@ export default function Contact() {
     "w-full px-4 py-3 rounded-2xl border-2 border-border-soft dark:border-slate-600 bg-cream dark:bg-slate-700 text-dark dark:text-white placeholder:text-slate-400 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-slate-700 focus:border-dark dark:focus:border-primary focus:ring-4 focus:ring-primary/20";
 
   return (
-    <section className="relative overflow-hidden section-wrap bg-primary" id="contact">
+    <section className="relative section-wrap bg-primary border-t-[3px] border-dark" id="contact">
       {/* Dekorasi ringan ala MotherDuck — coretan awan & lingkaran samar di atas kuning */}
-      <span className="absolute rounded-full pointer-events-none -top-24 -right-24 w-72 h-72 bg-dark/5 blur-3xl"></span>
-      <svg className="absolute hidden pointer-events-none left-6 bottom-6 sm:block opacity-25" width="140" height="90" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M30 70c-14 0-22-11-18-23-8-10-2-27 14-27 3-13 24-18 32-6 15-3 27 10 22 23 12 4 12 22-2 27-4 8-16 10-23 4-9 8-22 5-25-4-8 3-16-2-16-11" stroke="#383838" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <span className="absolute rounded-full -top-24 -right-24 w-72 h-72 bg-dark/5 blur-3xl"></span>
+        <svg className="absolute hidden left-6 bottom-6 sm:block opacity-25" width="140" height="90" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 70c-14 0-22-11-18-23-8-10-2-27 14-27 3-13 24-18 32-6 15-3 27 10 22 23 12 4 12 22-2 27-4 8-16 10-23 4-9 8-22 5-25-4-8 3-16-2-16-11" stroke="#383838" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+
+      {/* Stamp "Contact Me" miring, menumpuk di garis batas section — ala tag "SUBSCRIBE" MotherDuck */}
+      <div
+        className="absolute z-20 -top-8 left-6 sm:-top-10 sm:left-12 lg:left-20"
+        data-aos="zoom-in"
+        data-aos-duration="700"
+        data-aos-delay="100"
+        data-aos-anchor-placement="top-bottom"
+      >
+        <span className="inline-block px-7 py-3.5 text-base font-extrabold uppercase border-2 rounded-xl shadow-card sm:text-xl sm:px-9 sm:py-4 -rotate-6 bg-accent-coral border-dark text-dark tracking-widest2 font-heading">
+          {t('contact_heading')}
+        </span>
+      </div>
 
       <div className="container relative">
         <div className="grid items-center max-w-5xl gap-10 mx-auto lg:grid-cols-5 lg:gap-12">
 
           {/* Kiri: heading + form "Write Message" */}
-          <div className="lg:col-span-3" data-aos="fade-right" data-aos-anchor-placement="top-bottom">
-            <p className="mb-3 eyebrow-label !text-dark/60">{t('contact_heading')}</p>
+          <div className="-mt-3 lg:col-span-3 sm:-mt-4" data-aos="fade-right" data-aos-anchor-placement="top-bottom">
             <h2 className="mb-4 font-heading text-3xl font-extrabold uppercase tracking-tightest text-dark sm:text-4xl">
               {t('contact_form_title')}
             </h2>

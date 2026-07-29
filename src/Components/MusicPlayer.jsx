@@ -278,7 +278,7 @@ export default function MusicPlayer() {
   return (
     <div className="w-full py-8 border-t border-border-soft dark:border-slate-800">
       <div className="container">
-        <div className="flex flex-col items-center gap-5 p-5 bg-white border rounded-3xl sm:p-6 sm:gap-6 border-border-soft dark:border-slate-700 dark:bg-slate-800 sm:flex-row">
+        <div className="flex flex-col items-center max-w-xl gap-5 p-5 mx-auto bg-white border rounded-3xl sm:p-6 sm:gap-6 border-border-soft dark:border-slate-700 dark:bg-slate-800 sm:flex-row">
           <audio ref={audioRef} src={currentTrack.src} preload="metadata" crossOrigin="anonymous" />
 
           {/* Cover + info lagu */}
