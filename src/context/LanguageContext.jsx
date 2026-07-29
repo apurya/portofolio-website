@@ -11,7 +11,7 @@ const translations = {
     nav_contact: "Kontak",
 
     // Hero / Greetings
-    greet_hello: "Hai 👋 Saya",
+    greet_hello: "Hai! 👋 Saya",
     greet_role: "Web Developer",
     greet_welcome: "Selamat Datang di",
     greet_website: "Website",
@@ -112,7 +112,7 @@ const translations = {
     nav_contact: "Contact",
 
     // Hero / Greetings
-    greet_hello: "Hi 👋 I am",
+    greet_hello: "Hi! 👋 I am",
     greet_role: "Web Developer",
     greet_welcome: "Welcome to My Personal",
     greet_website: "Website",

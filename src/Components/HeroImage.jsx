@@ -9,7 +9,7 @@ export default function HeroImage() {
   className="absolute -z-10"
   style={{
     width: '38%',
-    height: '32%',
+    height: '26%',
     top: '-3%',
     right: '-4%',
     transform: 'rotate(8deg)',
