@@ -8,9 +8,9 @@ export default function HeroImage() {
         <span
   className="absolute -z-10"
   style={{
-    width: '38%',
-    height: '26%',
-    top: '-3%',
+    width: '36%',
+    height: '28%',
+    top: '-5%',
     right: '-4%',
     transform: 'rotate(8deg)',
   }}
@@ -36,9 +36,9 @@ export default function HeroImage() {
 
 <img
   src={HeroIllustration}
-  alt="Ilustrasi jendela kode purya.portfolio dengan maskot sapi"
+  alt="Ilustrasi jendela kode purya.portfolio dengan maskot kucing"
   draggable={false}
-  className="relative z-10 w-full h-auto select-none pointer-events-none"
+  className="relative z-10 w-[80%] h-auto select-none pointer-events-none"
 />
       </div>
     </div>
