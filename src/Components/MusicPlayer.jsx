@@ -1,92 +1,57 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 
 const PLAYLIST = [
   { title: 'Warna Primer', artist: 'starrducc', src: '/music/warnaprimer.mp3', cover: '/music/starrducc.jpg' },
 ]
 
+const EQ_BAR_COUNT = 4
+const EQ_BASE_LEVEL = 0.22
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
 export default function MusicPlayer() {
+  const { t } = useLanguage()
   const audioRef = useRef(null)
-  const containerRef = useRef(null)
+  const progressBarRef = useRef(null)
+  const barRefs = useRef([])
+
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [glowColor, setGlowColor] = useState('59, 130, 246')
   const [progress, setProgress] = useState(0) // 0 - 100 (%)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+
+  const isDraggingRef = useRef(false)
+  useEffect(() => {
+    isDraggingRef.current = isDragging
+  }, [isDragging])
 
   const currentTrack = PLAYLIST[trackIndex]
+  const hasMultipleTracks = PLAYLIST.length > 1
 
+  // Web Audio API: analisis frekuensi asli lagu untuk menggerakkan equalizer
   const audioCtxRef = useRef(null)
   const analyserRef = useRef(null)
   const dataArrayRef = useRef(null)
   const sourceNodeRef = useRef(null)
   const rafIdRef = useRef(null)
-  const glowColorRef = useRef(glowColor)
-
-  useEffect(() => {
-    glowColorRef.current = glowColor
-  }, [glowColor])
-
-  useEffect(() => {
-    let cancelled = false
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.src = currentTrack.cover
-
-    img.onload = () => {
-      if (cancelled) return
-      try {
-        const canvas = document.createElement('canvas')
-        const size = 40
-        canvas.width = size
-        canvas.height = size
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, size, size)
-
-        const { data } = ctx.getImageData(0, 0, size, size)
-        let r = 0, g = 0, b = 0, count = 0
-
-        for (let i = 0; i < data.length; i += 4) {
-          const pr = data[i]
-          const pg = data[i + 1]
-          const pb = data[i + 2]
-          const alpha = data[i + 3]
-          if (alpha < 200) continue
-
-          const max = Math.max(pr, pg, pb)
-          const min = Math.min(pr, pg, pb)
-          if (max > 245 && min > 245) continue
-          if (max < 15) continue
-
-          r += pr
-          g += pg
-          b += pb
-          count++
-        }
-
-        if (count > 0) {
-          r = Math.round(r / count)
-          g = Math.round(g / count)
-          b = Math.round(b / count)
-          setGlowColor(`${r}, ${g}, ${b}`)
-        }
-      } catch (err) {
-      }
-    }
-
-    return () => {
-      cancelled = true
-    }
-  }, [currentTrack.cover])
 
   const ensureAudioGraph = () => {
     const audio = audioRef.current
     if (!audio || sourceNodeRef.current) return
-
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext
       const audioCtx = new AudioContextClass()
       const analyser = audioCtx.createAnalyser()
       analyser.fftSize = 64
-      analyser.smoothingTimeConstant = 0.8
+      analyser.smoothingTimeConstant = 0.75
 
       const source = audioCtx.createMediaElementSource(audio)
       source.connect(analyser)
@@ -97,67 +62,48 @@ export default function MusicPlayer() {
       sourceNodeRef.current = source
       dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount)
     } catch (err) {
+      // Browser lama tanpa Web Audio API: musik tetap jalan, equalizer diam di posisi dasar
     }
   }
 
-  const runGlowLoop = () => {
+  const setBarLevel = (bar, level) => {
+    if (bar) bar.style.transform = `scaleY(${level.toFixed(2)})`
+  }
+
+  const runEqLoop = () => {
     const analyser = analyserRef.current
     const dataArray = dataArrayRef.current
-    const el = containerRef.current
-    if (!analyser || !dataArray || !el) return
+    if (!analyser || !dataArray) return
 
     analyser.getByteFrequencyData(dataArray)
 
-    const bassBinCount = Math.max(1, Math.floor(dataArray.length * 0.35))
-    let sum = 0
-    for (let i = 0; i < bassBinCount; i++) sum += dataArray[i]
-    const bassLevel = sum / bassBinCount / 255
+    const bars = barRefs.current
+    const groupSize = Math.max(1, Math.floor(dataArray.length / EQ_BAR_COUNT))
 
-    const intensity = Math.pow(bassLevel, 1.6)
-
-    const blur1 = 10 + intensity * 34
-    const spread1 = 2 + intensity * 10
-    const alpha1 = 0.35 + intensity * 0.45
-    const blur2 = 20 + intensity * 60
-    const spread2 = 4 + intensity * 16
-    const alpha2 = 0.18 + intensity * 0.35
-
-    const color = glowColorRef.current
-    el.style.boxShadow =
-      `0 0 ${blur1.toFixed(1)}px ${spread1.toFixed(1)}px rgba(${color}, ${alpha1.toFixed(2)}), ` +
-      `0 0 ${blur2.toFixed(1)}px ${spread2.toFixed(1)}px rgba(${color}, ${alpha2.toFixed(2)})`
-
-    const cover = el.querySelector('[data-cover]')
-    if (cover) {
-      const scale = 1 + intensity * 0.08
-      cover.style.transform = `scale(${scale})`
+    for (let i = 0; i < EQ_BAR_COUNT; i++) {
+      let sum = 0
+      const start = i * groupSize
+      const end = start + groupSize
+      for (let j = start; j < end; j++) sum += dataArray[j]
+      const avg = sum / groupSize / 255 // 0 - 1
+      const level = Math.min(1, Math.max(EQ_BASE_LEVEL, Math.pow(avg, 0.7)))
+      setBarLevel(bars[i], level)
     }
 
-    rafIdRef.current = requestAnimationFrame(runGlowLoop)
+    rafIdRef.current = requestAnimationFrame(runEqLoop)
   }
 
-  const startGlowLoop = () => {
-    stopGlowLoop()
-    rafIdRef.current = requestAnimationFrame(runGlowLoop)
+  const startEqLoop = () => {
+    stopEqLoop()
+    rafIdRef.current = requestAnimationFrame(runEqLoop)
   }
 
-  const stopGlowLoop = () => {
+  const stopEqLoop = () => {
     if (rafIdRef.current) {
       cancelAnimationFrame(rafIdRef.current)
       rafIdRef.current = null
     }
-    const el = containerRef.current
-    if (el) el.style.boxShadow = ''
-    const cover = el?.querySelector('[data-cover]')
-    if (cover) cover.style.transform = ''
-  }
-
-  const stopMusic = () => {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.pause()
-    setIsPlaying(false)
-    stopGlowLoop()
+    barRefs.current.forEach((bar) => setBarLevel(bar, EQ_BASE_LEVEL))
   }
 
   const playCurrent = () => {
@@ -165,60 +111,83 @@ export default function MusicPlayer() {
     if (!audio) return
 
     ensureAudioGraph()
+    if (audioCtxRef.current?.state === 'suspended') {
+      audioCtxRef.current.resume().catch(() => {})
+    }
 
     const playPromise = audio.play()
     if (playPromise && typeof playPromise.then === 'function') {
       playPromise
         .then(() => {
           setIsPlaying(true)
-          startGlowLoop()
+          startEqLoop()
         })
-        .catch(() => {
-          setIsPlaying(false)
-        })
+        .catch(() => setIsPlaying(false))
     } else {
       setIsPlaying(true)
-      startGlowLoop()
-    }
-
-    if (audioCtxRef.current?.state === 'suspended') {
-      audioCtxRef.current.resume().catch(() => {})
+      startEqLoop()
     }
   }
 
-  const toggleMusic = () => {
-    if (isPlaying) {
-      stopMusic()
-    } else {
-      playCurrent()
-    }
+  const stopMusic = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.pause()
+    setIsPlaying(false)
+    stopEqLoop()
   }
+
+  const toggleMusic = () => (isPlaying ? stopMusic() : playCurrent())
 
   const goToTrack = (newIndex) => {
     const wasPlaying = isPlaying
-    stopGlowLoop()
-    setIsPlaying(false)
-
     const nextIndex = (newIndex + PLAYLIST.length) % PLAYLIST.length
+    setIsPlaying(false)
+    stopEqLoop()
     setTrackIndex(nextIndex)
-
-    if (wasPlaying) {
-      setTimeout(() => playCurrent(), 0)
-    }
+    if (wasPlaying) setTimeout(() => playCurrent(), 0)
   }
 
   const nextTrack = () => goToTrack(trackIndex + 1)
   const prevTrack = () => goToTrack(trackIndex - 1)
 
-  const seekTo = (e) => {
-  const audio = audioRef.current
-  const bar = e.currentTarget
-  if (!audio || !audio.duration) return
-  const rect = bar.getBoundingClientRect()
-  const ratio = (e.clientX - rect.left) / rect.width
-  audio.currentTime = ratio * audio.duration
-}
+  // Progress bar bisa digeser (drag) oleh kursor / jari, tidak hanya diklik
+  const getRatioFromPointer = (e) => {
+    const bar = progressBarRef.current
+    if (!bar) return 0
+    const rect = bar.getBoundingClientRect()
+    return Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width))
+  }
 
+  const handleSeekStart = (e) => {
+    const audio = audioRef.current
+    if (!audio || !Number.isFinite(audio.duration)) return
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+    setIsDragging(true)
+    const ratio = getRatioFromPointer(e)
+    setProgress(ratio * 100)
+    setCurrentTime(ratio * audio.duration)
+  }
+
+  const handleSeekMove = (e) => {
+    if (!isDragging) return
+    const audio = audioRef.current
+    if (!audio || !Number.isFinite(audio.duration)) return
+    const ratio = getRatioFromPointer(e)
+    setProgress(ratio * 100)
+    setCurrentTime(ratio * audio.duration)
+  }
+
+  const handleSeekEnd = (e) => {
+    const audio = audioRef.current
+    if (isDragging && audio && Number.isFinite(audio.duration)) {
+      const ratio = getRatioFromPointer(e)
+      audio.currentTime = ratio * audio.duration
+    }
+    setIsDragging(false)
+  }
+
+  // Ganti lagu otomatis saat selesai, & handle error load
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
@@ -228,7 +197,7 @@ export default function MusicPlayer() {
     }
     const handleError = () => {
       setIsPlaying(false)
-      stopGlowLoop()
+      stopEqLoop()
     }
     audio.addEventListener('ended', handleEnded)
     audio.addEventListener('error', handleError)
@@ -236,26 +205,35 @@ export default function MusicPlayer() {
       audio.removeEventListener('ended', handleEnded)
       audio.removeEventListener('error', handleError)
     }
-useEffect(() => {
-  const audio = audioRef.current
-  if (!audio) return
-
-  const handleTimeUpdate = () => {
-    if (audio.duration > 0) {
-      setProgress((audio.currentTime / audio.duration) * 100)
-    }
-  }
-  const handleLoadedMetadata = () => setProgress(0)
-
-  audio.addEventListener('timeupdate', handleTimeUpdate)
-  audio.addEventListener('loadedmetadata', handleLoadedMetadata)
-  return () => {
-    audio.removeEventListener('timeupdate', handleTimeUpdate)
-    audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
-  }
-}, [trackIndex])
   }, [trackIndex])
 
+  // Update progress bar & durasi (diskip saat user sedang menggeser manual)
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    const handleTimeUpdate = () => {
+      if (isDraggingRef.current) return
+      if (audio.duration > 0) {
+        setProgress((audio.currentTime / audio.duration) * 100)
+        setCurrentTime(audio.currentTime)
+      }
+    }
+    const handleLoadedMetadata = () => {
+      setProgress(0)
+      setCurrentTime(0)
+      setDuration(audio.duration || 0)
+    }
+
+    audio.addEventListener('timeupdate', handleTimeUpdate)
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata)
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate)
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+    }
+  }, [trackIndex])
+
+  // Stop musik saat tab disembunyikan / window kehilangan fokus
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) stopMusic()
@@ -264,140 +242,152 @@ useEffect(() => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('blur', handleBlur)
-
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('blur', handleBlur)
-      stopGlowLoop()
-      audioCtxRef.current?.close?.()
+      stopEqLoop()
     }
   }, [])
 
-useEffect(() => {
-  const tryAutoplay = () => {
-    if (!isPlaying) playCurrent()
-  }
+  // Coba autoplay, fallback ke interaksi pertama pengguna (kebijakan browser)
+  useEffect(() => {
+    const tryAutoplay = () => {
+      if (!isPlaying) playCurrent()
+    }
+    tryAutoplay()
 
-  tryAutoplay()
+    const handleFirstInteraction = () => {
+      if (!isPlaying) playCurrent()
+      document.removeEventListener('click', handleFirstInteraction)
+      document.removeEventListener('touchstart', handleFirstInteraction)
+      document.removeEventListener('keydown', handleFirstInteraction)
+    }
 
-  const handleFirstInteraction = () => {
-    if (!isPlaying) playCurrent()
-    document.removeEventListener('click', handleFirstInteraction)
-    document.removeEventListener('touchstart', handleFirstInteraction)
-    document.removeEventListener('keydown', handleFirstInteraction)
-  }
+    document.addEventListener('click', handleFirstInteraction)
+    document.addEventListener('touchstart', handleFirstInteraction)
+    document.addEventListener('keydown', handleFirstInteraction)
 
-  document.addEventListener('click', handleFirstInteraction)
-  document.addEventListener('touchstart', handleFirstInteraction)
-  document.addEventListener('keydown', handleFirstInteraction)
-
-  return () => {
-    document.removeEventListener('click', handleFirstInteraction)
-    document.removeEventListener('touchstart', handleFirstInteraction)
-    document.removeEventListener('keydown', handleFirstInteraction)
-  }
-}, [])
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction)
+      document.removeEventListener('touchstart', handleFirstInteraction)
+      document.removeEventListener('keydown', handleFirstInteraction)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
-    <>
-      <audio ref={audioRef} src={currentTrack.src} crossOrigin="anonymous" preload="auto" />
+    <div className="w-full py-8 border-t border-border-soft dark:border-slate-800">
+      <div className="container">
+        <div className="flex flex-col items-center gap-5 p-5 bg-white border rounded-3xl sm:p-6 sm:gap-6 border-border-soft dark:border-slate-700 dark:bg-slate-800 sm:flex-row">
+          <audio ref={audioRef} src={currentTrack.src} preload="metadata" crossOrigin="anonymous" />
 
-      {/* Tombol player*/}
-      <div
-        ref={containerRef}
-        className={`fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 flex items-center gap-1 pr-3 rounded-full backdrop-blur-sm border select-none ${
-          isPlaying ? 'border-transparent music-glow' : 'border-slate-100 dark:border-slate-700 shadow-lg transition-shadow duration-500'
-        }`}
-        style={{
-          '--glow-color': glowColor,
-          backgroundColor: isPlaying ? `rgba(${glowColor}, 0.16)` : undefined,
-        }}
-      >
-        {/* Bar progress lagu, warnanya ikut warna dominan cover */}
-<div
-  onClick={seekTo}
-  className="fixed z-40 h-1.5 rounded-full cursor-pointer bg-black/10 dark:bg-white/10"
-  style={{
-    bottom: '4px',
-    right: '20px',
-    left: '20px',
-    maxWidth: '260px',
-    marginLeft: 'auto',
-  }}
->
-  <div
-    className="h-full transition-[width] duration-150 ease-linear rounded-full"
-    style={{
-      width: `${progress}%`,
-      backgroundColor: `rgb(${glowColor})`,
-      boxShadow: `0 0 8px 1px rgba(${glowColor}, 0.6)`,
-    }}
-  />
-</div>
-        {/* Tombol Previous */}
-        <button
-          onClick={prevTrack}
-          aria-label="Lagu sebelumnya"
-          title="Lagu sebelumnya"
-          className="flex items-center justify-center w-8 h-8 ml-2 rounded-full shrink-0 hover:bg-black/10 dark:hover:bg-white/10 active:scale-90 transition-transform"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-dark dark:text-white">
-            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
-          </svg>
-        </button>
+          {/* Cover + info lagu */}
+          <div className="flex items-center w-full gap-4 sm:w-auto sm:min-w-[210px]">
+            <div className="relative flex items-center justify-center w-14 h-14 overflow-hidden shrink-0 rounded-xl bg-cream dark:bg-slate-700">
+              <img
+                src={currentTrack.cover}
+                alt={currentTrack.title}
+                draggable={false}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="min-w-0 text-left">
+              <p className="inline-flex items-center gap-1.5 mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-dark/60 dark:text-white/60">
+                <span className="eq-bars text-primary">
+                  {Array.from({ length: EQ_BAR_COUNT }).map((_, i) => (
+                    <span key={i} ref={(el) => (barRefs.current[i] = el)} />
+                  ))}
+                </span>
+                {t('music_now_playing')}
+              </p>
+              <p className="text-sm font-bold truncate font-heading text-dark dark:text-white">
+                {currentTrack.title}
+              </p>
+              <p className="text-xs truncate text-slate-500 dark:text-slate-400">{currentTrack.artist}</p>
+            </div>
+          </div>
 
-        {/* Cover + Play/Pause */}
-        <button
-          onClick={toggleMusic}
-          aria-label={isPlaying ? 'Hentikan musik' : 'Putar musik'}
-          title={isPlaying ? 'Hentikan musik' : 'Putar musik'}
-          className="relative flex items-center justify-center w-12 h-12 overflow-hidden transition-transform duration-150 ease-out rounded-full shrink-0 touch-manipulation hover:scale-105 active:scale-90"
-        >
-          <img
-            data-cover
-            src={currentTrack.cover}
-            alt={currentTrack.title}
-            draggable={false}
-            className={`w-full h-full object-cover transition-transform duration-100 ease-out ${isPlaying ? 'animate-spin' : ''}`}
-            style={{ animationDuration: '6s' }}
-          />
-          <span className="absolute inset-0 flex items-center justify-center transition-colors bg-black/30 hover:bg-black/40">
-            {isPlaying ? (
-              <span className="flex items-end gap-0.5 h-3.5">
-                <span className="w-1 bg-white rounded-full animate-bounce" style={{ height: '60%', animationDuration: '0.6s' }}></span>
-                <span className="w-1 bg-white rounded-full animate-bounce" style={{ height: '100%', animationDuration: '0.8s' }}></span>
-                <span className="w-1 bg-white rounded-full animate-bounce" style={{ height: '40%', animationDuration: '0.5s' }}></span>
+          {/* Kontrol transport + progress bar */}
+          <div className="flex flex-col items-center flex-1 w-full gap-2.5">
+            <div className="flex items-center gap-3">
+              {hasMultipleTracks && (
+                <button
+                  onClick={prevTrack}
+                  aria-label={t('music_prev')}
+                  title={t('music_prev')}
+                  className="flex items-center justify-center w-8 h-8 transition-colors rounded-full text-dark dark:text-white hover:bg-dark/5 dark:hover:bg-white/10"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                  </svg>
+                </button>
+              )}
+
+              <button
+                onClick={toggleMusic}
+                aria-label={isPlaying ? t('music_pause') : t('music_play')}
+                title={isPlaying ? t('music_pause') : t('music_play')}
+                className="flex items-center justify-center w-10 h-10 transition-transform duration-200 rounded-full bg-primary text-dark hover:scale-105 active:scale-95"
+              >
+                {isPlaying ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
+              </button>
+
+              {hasMultipleTracks && (
+                <button
+                  onClick={nextTrack}
+                  aria-label={t('music_next')}
+                  title={t('music_next')}
+                  className="flex items-center justify-center w-8 h-8 transition-colors rounded-full text-dark dark:text-white hover:bg-dark/5 dark:hover:bg-white/10"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center w-full max-w-md gap-2">
+              <span className="text-[11px] tabular-nums text-slate-400 w-8 text-right shrink-0">
+                {formatTime(currentTime)}
               </span>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-5 h-5">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </span>
-        </button>
 
-        {/* Info lagu */}
-        <div className="flex flex-col items-start py-2 text-left max-w-[110px] sm:max-w-[150px]">
-          <span className="w-full text-xs font-bold truncate text-dark dark:text-white">
-            {currentTrack.title}
-          </span>
-          <span className="w-full text-[11px] truncate text-slate-500 dark:text-slate-400">
-            {currentTrack.artist}
-          </span>
+              {/* Track: area sentuh diperbesar secara vertikal supaya nyaman digeser */}
+              <div
+                ref={progressBarRef}
+                onPointerDown={handleSeekStart}
+                onPointerMove={handleSeekMove}
+                onPointerUp={handleSeekEnd}
+                onPointerCancel={handleSeekEnd}
+                className={`relative flex-1 flex items-center h-4 select-none touch-none ${isDragging ? 'cursor-grabbing' : 'cursor-pointer'}`}
+              >
+                <div className="relative w-full h-1.5 overflow-visible rounded-full bg-slate-200 dark:bg-slate-700">
+                  <div
+                    className="absolute top-0 left-0 h-full rounded-full bg-primary"
+                    style={{ width: `${progress}%` }}
+                  />
+                  {/* Thumb / gagang geser */}
+                  <div
+                    className={`absolute top-1/2 w-3.5 h-3.5 -translate-y-1/2 -translate-x-1/2 rounded-full bg-primary border-2 border-white dark:border-slate-800 shadow-card transition-transform ${isDragging ? 'scale-125' : 'scale-100'}`}
+                    style={{ left: `${progress}%` }}
+                  />
+                </div>
+              </div>
+
+              <span className="text-[11px] tabular-nums text-slate-400 w-8 shrink-0">
+                {formatTime(duration)}
+              </span>
+            </div>
+          </div>
         </div>
-
-        {/* Tombol Next */}
-        <button
-          onClick={nextTrack}
-          aria-label="Lagu berikutnya"
-          title="Lagu berikutnya"
-          className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 hover:bg-black/10 dark:hover:bg-white/10 active:scale-90 transition-transform"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-dark dark:text-white">
-            <path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" />
-          </svg>
-        </button>
       </div>
-    </>
+    </div>
   )
 }

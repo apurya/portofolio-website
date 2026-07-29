@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const translations = {
@@ -13,17 +11,13 @@ const translations = {
     nav_contact: "Kontak",
 
     // Hero / Greetings
-    greet_available: "Tersedia untuk kerja sama",
-    greet_hello: "Halo Semua 👋, Saya",
+    greet_hello: "Hai 👋 Saya",
     greet_role: "Web Developer",
     greet_welcome: "Selamat Datang di",
     greet_website: "Website",
     greet_suffix: "Pribadi Saya",
     greet_download: "Unduh CV",
     greet_contact: "Hubungi Saya",
-    greet_trait_1: "Cepat Belajar",
-    greet_trait_2: "Suka Memecahkan Masalah",
-    greet_trait_3: "Kolaboratif",
 
     // About
     about_label: "Tentang Saya",
@@ -31,10 +25,24 @@ const translations = {
     about_desc: "Saya lulusan Manajemen Informatika dengan pengalaman langsung dalam instalasi dan troubleshooting sistem Windows, konfigurasi jaringan LAN, pengembangan web, serta mendukung operasional IT harian. Saya senang mengambil sesuatu yang rusak dan diam-diam membuatnya bekerja kembali.",
     about_skills: "Keahlian Teknis",
     about_online: "Online",
+    technical_skills: [
+      "Troubleshooting Perangkat Keras & Peripheral",
+      "Konfigurasi Jaringan",
+      "Pengembangan Web",
+      "Manajemen Basis Data",
+      "Pengkabelan LAN",
+      "Pemeliharaan Preventif",
+      "Backup & Pemulihan Data",
+      "Dokumentasi Teknis",
+      "Dukungan Pengguna",
+      "Analitis & Pemecahan Masalah",
+    ],
 
     // Experience
     exp_heading: "Pengalaman Magang",
-    exp_tech: "Teknologi yang Digunakan",
+    exp_learn_more: "Selengkapnya",
+    exp_show_less: "Tutup",
+    marquee_label: "SERTIFIKAT",
 
     // Language & Tools
     langtools_heading: "Bahasa & Tools",
@@ -46,21 +54,24 @@ const translations = {
     cert_heading: "Sertifikasi",
     cert_count: "Sertifikat",
     cert_view: "Lihat Sertifikat",
+    marquee_label_exp: "PENGALAMAN MAGANG",
 
     // Projects
-    projects_heading: "Proyek",
-    projects_website: "Website",
-    projects_uiux: "UI/UX",
+    projects_heading: "Proyek",   
+    projects_personal: "Proyek Pribadi",
+    projects_view: "Lihat Project",
 
     // Contact
     contact_heading: "Hubungi Saya",
     contact_desc: "Terbuka untuk Magang, Peluang Full-Time, dan Proyek IT yang Menarik. Silakan Hubungi Saya!",
+    contact_form_title: "Tulis Pesan",
+    contact_form_desc: "Isi form di bawah, saya akan balas secepatnya.",
     contact_name: "Nama",
-    contact_name_ph: "Nama lengkap kamu",
+    contact_name_ph: "Masukkan nama Anda",
     contact_email: "Email",
-    contact_email_ph: "kamu@contoh.com",
+    contact_email_ph: "nama@email.com",
     contact_message: "Pesan",
-    contact_message_ph: "Tulis pesanmu di sini...",
+    contact_message_ph: "Tuliskan pesan Anda di sini...",
     contact_submit: "Kirim Pesan",
     contact_sending: "Mengirim...",
     contact_success: "Terima kasih! Pesanmu berhasil terkirim.",
@@ -69,28 +80,20 @@ const translations = {
     contact_email_required: "Email wajib diisi.",
     contact_email_invalid: "Format email tidak valid.",
     contact_message_required: "Pesan wajib diisi.",
-    contact_info_title: "Info Kontak",
-    contact_info_desc: "Pilih cara paling nyaman untuk menghubungi saya.",
-    contact_response_note: "Biasanya membalas dalam 24 jam.",
-    contact_location_label: "Lokasi",
 
     // Footer
-    footer_desc: "Lulusan Manajemen Informatika yang tertarik pada IT Support, Networking, dan System Administration.",
     footer_links: "Tautan",
     footer_contact: "Kontak",
-    footer_cta_title: "Tertarik Bekerja Sama?",
-    footer_cta_desc: "Yuk diskusikan proyek atau peluang berikutnya.",
-    footer_cta_button: "Hubungi Saya",
-    footer_rights: "Hak cipta dilindungi.",
     made_with: "Dibuat dengan",
     by: "oleh",
     using: "menggunakan",
 
-    // System status
-    status_operational: "Semua Sistem Berjalan Normal",
-    status_uptime: "Waktu Aktif",
-    status_response: "Waktu Respons",
-    status_checked: "Terakhir Dicek",
+    // Music player
+    music_now_playing: "Sedang Diputar",
+    music_play: "Putar musik",
+    music_pause: "Hentikan musik",
+    music_prev: "Lagu sebelumnya",
+    music_next: "Lagu berikutnya",
 
     // 404
     notfound_status: "Halaman Tidak Ditemukan",
@@ -109,8 +112,7 @@ const translations = {
     nav_contact: "Contact",
 
     // Hero / Greetings
-    greet_available: "Available for work",
-    greet_hello: "Hello Everyone 👋, I'm",
+    greet_hello: "Hi 👋 I am",
     greet_role: "Web Developer",
     greet_welcome: "Welcome to My Personal",
     greet_website: "Website",
@@ -124,10 +126,24 @@ const translations = {
     about_desc: "I'm an Informatics Management graduate with hands-on experience installing and troubleshooting Windows systems, setting up LAN networks, web development and supporting daily IT operations. I like taking something broken and quietly making it work again.",
     about_skills: "Technical Skills",
     about_online: "Online",
+    technical_skills: [
+      "Hardware & Peripheral Troubleshooting",
+      "Network Configuration",
+      "Web Development",
+      "Database Management",
+      "LAN Cabling",
+      "Preventive Maintenance",
+      "Data Backup & Recovery",
+      "Technical Documentation",
+      "User Support",
+      "Analytical & Problem-Solving",
+    ],
 
     // Experience
     exp_heading: "Internship Experience",
-    exp_tech: "Technologies Used",
+    exp_learn_more: "Learn more",
+    exp_show_less: "Show less",
+    marquee_label: "CERTIFICATION",
 
     // Language & Tools
     langtools_heading: "Language & Tools",
@@ -139,19 +155,22 @@ const translations = {
     cert_heading: "Certification",
     cert_count: "Certificates",
     cert_view: "View Certificate",
+    marquee_label_exp: "INTERNSHIP EXPERIENCE",
 
     // Projects
     projects_heading: "Projects",
-    projects_website: "Website",
-    projects_uiux: "UI/UX",
+    projects_personal: "Personal Project",
+    projects_view: "View Project",
 
     // Contact
     contact_heading: "Contact Me",
     contact_desc: "Open to Internship, Full-Time Opportunities, and Exciting IT Projects. Feel Free to Reach Out!",
+    contact_form_title: "Write a Message",
+    contact_form_desc: "Fill out the form below and I'll get back to you soon.",
     contact_name: "Name",
-    contact_name_ph: "Your full name",
+    contact_name_ph: "Enter your name",
     contact_email: "Email",
-    contact_email_ph: "you@example.com",
+    contact_email_ph: "name@email.com",
     contact_message: "Message",
     contact_message_ph: "Write your message here...",
     contact_submit: "Send Message",
@@ -162,28 +181,20 @@ const translations = {
     contact_email_required: "Email is required.",
     contact_email_invalid: "Invalid email format.",
     contact_message_required: "Message is required.",
-    contact_info_title: "Contact Info",
-    contact_info_desc: "Pick whichever way works best for you.",
-    contact_response_note: "Usually responds within 24 hours.",
-    contact_location_label: "Location",
 
     // Footer
-    footer_desc: "Informatics Management graduate passionate about Web Developer, IT Support, Networking, and System Administration.",
     footer_links: "Links",
     footer_contact: "Contact",
-    footer_cta_title: "Let's Work Together",
-    footer_cta_desc: "Let's talk about your next project or opportunity.",
-    footer_cta_button: "Get in Touch",
-    footer_rights: "All rights reserved.",
     made_with: "Made with",
     by: "by",
     using: "using",
 
-    // System status
-    status_operational: "All Systems Operational",
-    status_uptime: "Uptime",
-    status_response: "Response Time",
-    status_checked: "Last Checked",
+    // Music player
+    music_now_playing: "Now Playing",
+    music_play: "Play music",
+    music_pause: "Pause music",
+    music_prev: "Previous track",
+    music_next: "Next track",
 
     // 404
     notfound_status: "Page Not Found",

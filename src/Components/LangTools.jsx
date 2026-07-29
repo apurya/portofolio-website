@@ -5,6 +5,7 @@ import Data from "../Data"
 import Buttons from "./Buttons"
 import SkillCard from "./SkillCard"
 import { useLanguage } from '../context/LanguageContext'
+import ToolsIcon from '../img/computer.png'
 
 export default function LangTools() {
   const { t } = useLanguage();
@@ -21,10 +22,10 @@ export default function LangTools() {
   }, [])
 
   return (
-    <div className="mt-24" data-aos="fade-up">
-      <p className="mb-2 eyebrow-label">{t('about_skills')}</p>
-      <h3 className="section-title !text-2xl sm:!text-3xl">{t('langtools_heading')}</h3>
-
+    <div data-aos="fade-up">
+      <h3 className="inline-flex items-center gap-3 px-6 py-2.5 sm:px-7 sm:py-3 font-heading text-2xl sm:text-3xl font-bold tracking-tightest text-dark bg-primary rounded-full">
+  {t('langtools_heading')}
+</h3>
       <div className="mt-6">
         <Buttons
           menuItems={menuItems}

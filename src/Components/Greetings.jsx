@@ -3,27 +3,22 @@ import { useLanguage } from '../context/LanguageContext'
 
 export default function Greetings() {
   const { t } = useLanguage();
+  const [helloBefore, helloAfter] = t('greet_hello').split('👋');
 
   return (
     <div className="w-full text-center md:text-left">
 
-      <div className="inline-flex items-center gap-2 mb-6 eyebrow-label">
-        <span className="relative flex w-2 h-2">
-          <span className="absolute inline-flex w-full h-full rounded-full opacity-75 bg-accent-teal animate-ping"></span>
-          <span className="relative inline-flex w-2 h-2 rounded-full bg-accent-teal"></span>
-        </span>
-        {t('greet_available')}
-      </div>
-
-      <p className="text-lg font-semibold text-dark/70 dark:text-white/60 md:text-xl">
-        {t('greet_hello')}
+      <p className="-mt-1 mb-2 flex items-center justify-center gap-1.5 text-xl font-semibold text-dark/70 dark:text-white/60 md:justify-start md:text-2xl">
+        {helloBefore}
+        <span className="inline-block animate-wave" style={{ transformOrigin: '70% 70%' }}>👋</span>
+        {helloAfter}
       </p>
 
-      <h1 className="mt-2 font-heading text-5xl font-extrabold leading-[1.05] tracking-tightest text-dark dark:text-white sm:text-6xl lg:text-7xl">
+      <h1 className="mt-1 font-heading text-5xl font-extrabold leading-[1.05] tracking-tightest text-dark dark:text-white sm:text-6xl lg:text-7xl">
         Aditiya <span className="marker-highlight">Purya</span>
       </h1>
 
-      <h2 className="mt-5 mb-5 text-xl font-medium text-slate-500 dark:text-slate-400 lg:text-2xl">
+      <h2 className="mt-4 mb-5 text-xl font-medium text-slate-500 dark:text-slate-400 lg:text-2xl">
         {t('greet_role')}
       </h2>
 

@@ -1,114 +1,131 @@
 import Aos from 'aos';
 import 'aos/dist/aos.css';
-import { useEffect } from 'react';
-import works from '../img/works.png'
+import { useEffect, useState } from 'react';
 import ExpData from '../ExpData';
 import { useLanguage } from '../context/LanguageContext';
 
-const ACCENTS = [
-  { bar: 'bg-primary', text: 'text-dark dark:text-primary', dot: 'bg-primary' },
-  { bar: 'bg-accent-blue', text: 'text-accent-blue', dot: 'bg-accent-blue' },
-  { bar: 'bg-accent-teal', text: 'text-accent-teal', dot: 'bg-accent-teal' },
-  { bar: 'bg-accent-coral', text: 'text-accent-coral', dot: 'bg-accent-coral' },
+const PANELS = [
+  { block: 'bg-primary', ink: 'text-dark', decor: ['bg-accent-blue', 'bg-accent-teal', 'bg-accent-coral'] },
+  { block: 'bg-accent-teal', ink: 'text-white', decor: ['bg-primary', 'bg-accent-coral', 'bg-white'] },
+  { block: 'bg-accent-coral', ink: 'text-dark', decor: ['bg-primary', 'bg-accent-teal', 'bg-white'] },
+  { block: 'bg-accent-blue', ink: 'text-dark', decor: ['bg-primary', 'bg-accent-coral', 'bg-white'] },
 ];
+
+function IllustrationPanel({ exp, panel }) {
+  const [c1, c2, c3] = panel.decor;
+  return (
+    <div className={`relative flex items-center justify-center min-h-[320px] sm:min-h-[420px] overflow-hidden p-10 sm:p-14 ${panel.block}`}>
+      <span className={`absolute w-20 h-14 rounded-full top-10 left-10 sm:left-16 opacity-90 ${c3}`} aria-hidden="true" />
+      <span className={`absolute w-10 h-10 rotate-45 rounded-md bottom-16 left-8 sm:left-12 ${c1}`} aria-hidden="true" />
+      <span className={`absolute rounded-full bottom-10 right-10 sm:right-16 w-14 h-14 ${c2}`} aria-hidden="true" style={{ clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)' }} />
+
+      <div className="relative z-10 flex items-center justify-center w-40 h-40 bg-white border-2 shadow-card border-dark sm:w-48 sm:h-48 rounded-2xl" style={{ boxShadow: '6px 6px 0 0 rgba(56,56,56,0.9)' }}>
+        <img
+          src={exp.img}
+          alt={exp.company}
+          className="object-contain w-24 h-24 sm:w-28 sm:h-28"
+        />
+      </div>
+    </div>
+  );
+}
+
+function TextPanel({ exp, panel, t }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="flex flex-col justify-center p-8 bg-cream dark:bg-slate-900 sm:p-14">
+      <span className="mb-4 text-xs font-bold tracking-widest2 uppercase text-dark/50 dark:text-white/40">
+        {exp.type} — {exp.period}
+      </span>
+
+      <h3 className="font-mono text-2xl font-bold leading-tight tracking-tight uppercase sm:text-3xl text-dark dark:text-white">
+        {exp.role}
+      </h3>
+
+      <p className={`mt-3 text-sm font-bold sm:text-base ${exp.id === '1' ? 'text-primary' : 'text-accent-teal'}`}>
+       {exp.company} · {exp.location}
+      </p>
+
+      <p className="mt-5 text-sm leading-relaxed sm:text-base text-slate-600 dark:text-slate-400">
+        {exp.points[0]}
+      </p>
+
+      {open && (
+        <div className="mt-4 space-y-4">
+          {exp.points.length > 1 && (
+            <ul className="space-y-2">
+              {exp.points.slice(1).map((point, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  <span className="w-1.5 h-1.5 mt-1.5 rounded-full shrink-0 bg-dark/40 dark:bg-white/30" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {exp.tech.map((techName) => (
+                <span key={techName} className="tag-chip">{techName}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-2 mt-6 text-sm font-bold tracking-wide uppercase underline underline-offset-4 decoration-2 w-max text-dark dark:text-white hover:text-accent-blue transition-colors"
+      >
+        {open ? t('exp_show_less') : t('exp_learn_more')}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-4 h-4 transition-transform ${open ? '-rotate-90' : ''}`}>
+          <path fillRule="evenodd" d="M12.293 3.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L15.586 10H3a1 1 0 110-2h12.586l-3.293-3.293a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 export default function Experience() {
   const { t, lang } = useLanguage();
   const data = ExpData[lang];
 
   useEffect(() => {
-    Aos.init({ duration: 1000 });
+    Aos.init({ duration: 700 });
   }, []);
 
   return (
-    <section id="experience" className="section-wrap">
-      <div className="container">
+    <section id="experience" className="relative">
+      <div className="container pt-20 sm:pt-28">
         <div className="mb-10" data-aos="fade-right">
-          <p className="mb-2 eyebrow-label">{t('exp_heading')}</p>
-          <div className="flex items-center gap-2">
-            <img src={works} alt="" className="w-8 h-8" />
-            <h3 className="section-title !text-2xl sm:!text-3xl">
-              {t('exp_heading')}
-            </h3>
-          </div>
+          <h3 className="section-title !text-2xl sm:!text-3xl">
+            {t('exp_heading')}
+          </h3>
         </div>
+      </div>
 
-        <div className="flex flex-col max-w-4xl gap-6 mx-auto">
-          {data.map((exp, index) => {
-            const accent = ACCENTS[index % ACCENTS.length];
+      <div className="border-y-2 border-dark dark:border-white/15">
+        {data.map((exp, index) => {
+          const panel = PANELS[index % PANELS.length];
+          const reversed = index % 2 === 1;
 
-            return (
-              <div
-                key={exp.id}
-                data-aos="fade-up"
-                data-aos-delay={index * 150}
-                data-aos-anchor-placement="top-bottom"
-                className="relative overflow-hidden card-surface group"
-              >
-                {/* Bilah aksen kiri, warnanya bergilir per entry */}
-                <span className={`absolute top-0 left-0 z-10 w-1 h-full ${accent.bar}`}></span>
-
-                <div className="p-5 sm:p-8">
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                    <div className="flex items-start gap-3">
-                      <img
-                        src={exp.img}
-                        alt={exp.company}
-                        className="object-contain flex-shrink-0 w-10 h-10 p-1 bg-white border rounded-2xl sm:w-12 sm:h-12 border-border-soft dark:border-slate-600 dark:bg-slate-900"
-                      />
-                      <div>
-                        <h3 className="text-lg font-bold sm:text-xl text-dark dark:text-white">
-                          {exp.role} <span className="text-sm font-medium sm:text-base text-slate-400">- {exp.type}</span>
-                        </h3>
-                        <p className={`mt-1 text-sm font-semibold sm:text-base ${accent.text}`}>
-                          {exp.company}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1 text-xs shrink-0 sm:text-sm text-slate-500 dark:text-slate-400 sm:items-end">
-                      <span className="flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                          <rect x="3" y="4" width="18" height="18" rx="2" />
-                          <path d="M16 2v4M8 2v4M3 10h18" />
-                        </svg>
-                        {exp.period}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                          <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        {exp.location}
-                      </span>
-                    </div>
-                  </div>
-
-                  <ul className="grid grid-cols-1 pt-5 mt-5 border-t gap-x-8 gap-y-3 border-border-soft dark:border-slate-700 sm:grid-cols-2">
-                    {exp.points.map((point, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                        <span className={`w-1.5 h-1.5 mt-1.5 rounded-full shrink-0 ${accent.dot}`}></span>
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="pt-5 mt-5 border-t border-border-soft dark:border-slate-700">
-                    <p className="mb-3 eyebrow-label">{t('exp_tech')}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {exp.tech.map((techName, i) => (
-                        <span key={techName} className="tag-chip">
-                          <span className={`w-1.5 h-1.5 rounded-full ${ACCENTS[i % ACCENTS.length].dot}`}></span>
-                          {techName}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+          return (
+            <div
+              key={exp.id}
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              className={`grid grid-cols-1 md:grid-cols-2 ${index !== 0 ? 'border-t-2 border-dark dark:border-white/15' : ''}`}
+            >
+              <div className={reversed ? 'md:order-2' : ''}>
+                <IllustrationPanel exp={exp} panel={panel} />
               </div>
-            );
-          })}
-        </div>
+              <div className={reversed ? 'md:order-1' : ''}>
+                <TextPanel exp={exp} panel={panel} t={t} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

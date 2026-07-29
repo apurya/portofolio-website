@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Patrick+Hand&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -53,16 +53,16 @@ section[id] {
   @apply inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-slate-800 border border-border-soft dark:border-slate-700 text-dark dark:text-slate-200 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card hover:border-primary/40;
   }
 
-  .eyebrow-label {
-    @apply inline-block text-xs font-bold tracking-widest2 uppercase text-dark/60 dark:text-white/50;
-  }
-
   .badge-pill {
     @apply inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-full bg-primary/15 text-dark dark:text-primary border border-primary/30;
   }
 
+  .section-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 mb-3 text-[11px] font-extrabold uppercase tracking-widest2 text-dark bg-primary rounded-full;
+  }
+
   .btn-primary {
-    @apply btn-wow inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold text-dark bg-primary rounded-full shadow-pop-yellow transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg;
+    @apply btn-wow inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold text-dark bg-primary rounded-full transition-all duration-300 hover:-translate-y-0.5;
   }
 
   .btn-secondary {
@@ -79,6 +79,46 @@ section[id] {
   .section-wrap {
     @apply py-20 sm:py-28;
   }
+
+  @keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-cloud-drift {
+  animation: cloud-drift 26s linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.animate-twinkle {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+}
+.animate-wave {
+  animation: wave 2.4s ease-in-out infinite;
+}
+
+@keyframes card-wobble {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+.animate-card-wobble {
+  animation: card-wobble 4.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+.animate-card-wobble:hover {
+  animation-play-state: paused;
+}
 
   .section-title {
     @apply font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tightest text-dark dark:text-white;
@@ -149,6 +189,56 @@ section[id] {
   .companion-chip:hover {
     @apply grayscale-0 opacity-100 -translate-y-1 shadow-card-hover border-primary/50;
   }
+  .cert-divider {
+  position: relative;
+  border-top: 2px dashed #D9D9D9;
+}
+.dark .cert-divider {
+  border-top-color: #4A423C;
+}
+.cert-divider::before,
+.cert-divider::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #F5EFEA;
+  border: 2px solid #D9D9D9;
+}
+.dark .cert-divider::before,
+.dark .cert-divider::after {
+  background: #2A2622;
+  border-color: #4A423C;
+}
+.cert-divider::before { left: -12px; }
+.cert-divider::after { right: -12px; }
+
+.cert-seal {
+  @apply absolute z-10 flex items-center justify-center w-14 h-14 -top-5 -left-5 rounded-full border-4 border-cream dark:border-slate-900 shadow-card text-dark;
+  transform: rotate(-10deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cert-card:hover .cert-seal {
+  transform: rotate(6deg) scale(1.08);
+}
+
+  .cert-card {
+  @apply relative block w-full overflow-visible bg-white dark:bg-slate-800 border-2 border-dark/10 dark:border-slate-700 rounded-3xl transition-all duration-300;
+  box-shadow: 4px 4px 0 0 rgba(56, 56, 56, 0.9);
+}
+.dark .cert-card {
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.6);
+}
+.cert-card:hover {
+  transform: translate(-2px, -4px);
+  box-shadow: 8px 10px 0 0 rgba(56, 56, 56, 0.9);
+  border-color: rgba(254, 222, 0, 0.55);
+}
+.dark .cert-card:hover {
+  box-shadow: 8px 10px 0 0 rgba(0, 0, 0, 0.65);
+}
 }
 
 .btn-wow {
@@ -186,6 +276,17 @@ section[id] {
 .btn-wow:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(254, 222, 0, 0.45), 0 12px 24px -8px rgba(254, 222, 0, 0.5);
+}
+
+/* Tombol download resume: flat, tanpa glow, selaras tema MotherDuck */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active {
+  box-shadow: none;
+}
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 56, 56, 0.25);
 }
 
 @keyframes float-computer {
@@ -290,9 +391,22 @@ section[id] {
   animation: scroll-up 16s linear infinite;
 }
 
-.music-glow {
-  transition: box-shadow 90ms linear;
-  box-shadow: 0 0 12px 2px rgba(var(--glow-color), 0.5), 0 0 24px 4px rgba(var(--glow-color), 0.25);
+/* Equalizer bar "Now Playing" pada footer music player — tingginya digerakkan
+   langsung oleh analisis frekuensi audio asli (lihat MusicPlayer.jsx), bukan animasi acak */
+.eq-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.eq-bars span {
+  width: 2.5px;
+  height: 100%;
+  border-radius: 999px;
+  background-color: currentColor;
+  transform: scaleY(0.22);
+  transform-origin: bottom;
+  transition: transform 90ms linear;
 }
 
 .stamp-card {

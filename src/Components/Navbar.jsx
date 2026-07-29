@@ -105,13 +105,12 @@ function Navbar() {
   }, [lang]);
 
   return (
-    
-    <div className="fixed top-0 left-0 z-50 w-full bg-cream dark:bg-slate-900 border-b border-border-soft dark:border-slate-800">
+    <div className="fixed top-0 left-0 z-50 w-full bg-transparent">
       <header className="md-nav">
         <div className="container flex items-center justify-between h-16 lg:h-20">
           <a href="#home" className="flex items-center gap-2.5 shrink-0">
-            <img src={logo} alt="Purya logo" className="object-contain w-8 h-8 rounded-lg" />
-            <span className="font-heading text-lg font-extrabold tracking-tightest text-dark dark:text-white">
+            <img src={logo} alt="Purya logo" className="object-contain w-8 h-8 rounded-lg drop-shadow" />
+            <span className="font-heading text-lg font-extrabold tracking-tightest text-dark dark:text-white drop-shadow-sm">
               Adit
             </span>
           </a>
@@ -129,16 +128,13 @@ function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 lg:gap-2">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={toggleLang}
               aria-label="Toggle language"
-              className="items-center hidden gap-1.5 px-3 py-2 text-xs font-bold rounded-full sm:flex text-dark/60 dark:text-white/60 hover:bg-white dark:hover:bg-slate-800"
+              className="flex items-center justify-center w-10 h-10 text-xs font-extrabold rounded-full shadow-card text-dark dark:text-white bg-white/80 dark:bg-slate-800/80 backdrop-blur hover:bg-white dark:hover:bg-slate-800"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
-              </svg>
               {lang === 'id' ? 'ID' : 'EN'}
             </button>
 
@@ -146,7 +142,7 @@ function Navbar() {
               type="button"
               onClick={() => setIsDark((prev) => !prev)}
               aria-label="Toggle dark mode"
-              className="items-center justify-center hidden w-10 h-10 rounded-full sm:flex text-dark/60 dark:text-white/60 hover:bg-white dark:hover:bg-slate-800"
+              className="flex items-center justify-center w-10 h-10 rounded-full shadow-card text-dark dark:text-white bg-white/80 dark:bg-slate-800/80 backdrop-blur hover:bg-white dark:hover:bg-slate-800"
             >
               {isDark ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
             </button>
@@ -154,7 +150,7 @@ function Navbar() {
             <button
               type="button"
               onClick={() => setIsNavMenuOpen((prev) => !prev)}
-              className="flex items-center justify-center w-10 h-10 rounded-full lg:hidden text-dark dark:text-white hover:bg-white dark:hover:bg-slate-800"
+              className="flex items-center justify-center w-10 h-10 rounded-full shadow-card lg:hidden text-dark dark:text-white bg-white/80 dark:bg-slate-800/80 backdrop-blur hover:bg-white dark:hover:bg-slate-800"
             >
               {isNavMenuOpen ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M6 6l12 12M18 6L6 18" /></svg>
@@ -166,7 +162,7 @@ function Navbar() {
         </div>
 
         {isNavMenuOpen && (
-          <nav className="px-4 pb-4 bg-cream dark:bg-slate-900 border-t border-border-soft dark:border-slate-800 lg:hidden">
+          <nav className="px-4 pb-4 mx-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur rounded-2xl shadow-card lg:hidden">
             <ul className="flex flex-col gap-1 pt-3">
               {navItems.map((item) => {
                 const isActive = activeId === item.id;
@@ -178,7 +174,7 @@ function Navbar() {
                       className={`flex items-center gap-3 px-4 py-2.5 text-sm font-bold rounded-xl transition-colors ${
                         isActive
                           ? 'bg-primary/15 text-dark dark:text-primary'
-                          : 'text-dark/60 dark:text-white/60 hover:bg-white dark:hover:bg-slate-800'
+                          : 'text-dark/60 dark:text-white/60 hover:bg-cream dark:hover:bg-slate-800'
                       }`}
                     >
                       {icons[item.id]}
@@ -187,23 +183,6 @@ function Navbar() {
                   </li>
                 );
               })}
-              <li className="flex items-center gap-2 pt-2 mt-1 border-t border-border-soft dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={toggleLang}
-                  className="flex-1 px-3 py-2 text-xs font-bold text-center rounded-lg text-dark/60 dark:text-white/60 hover:bg-white dark:hover:bg-slate-800"
-                >
-                  {lang === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsDark((prev) => !prev)}
-                  className="flex items-center justify-center flex-1 gap-2 px-3 py-2 text-xs font-bold rounded-lg text-dark/60 dark:text-white/60 hover:bg-white dark:hover:bg-slate-800"
-                >
-                  {isDark ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
-                  {isDark ? 'Light Mode' : 'Dark Mode'}
-                </button>
-              </li>
             </ul>
           </nav>
         )}

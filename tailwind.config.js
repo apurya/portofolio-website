@@ -90,11 +90,14 @@ export default {
         heading: ['Sora', 'sans-serif'],
         sans: ['Inter', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        hand: ['"Patrick Hand"', 'cursive'],
       },
       boxShadow: {
         card: '0 2px 8px rgba(56, 56, 56, 0.06), 0 1px 2px rgba(56, 56, 56, 0.04)',
         'card-hover': '0 20px 40px -12px rgba(56, 56, 56, 0.18)',
         'pop-yellow': '0 10px 24px -6px rgba(254, 222, 0, 0.45)',
+        sticky: '0 1px 1px rgba(56,56,56,0.12), 0 10px 18px -6px rgba(56,56,56,0.28)',
+        'sticky-hover': '0 2px 3px rgba(56,56,56,0.16), 0 20px 30px -8px rgba(56,56,56,0.35)',
       },
       letterSpacing: {
         tightest: '-0.04em',
