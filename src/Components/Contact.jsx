@@ -2,6 +2,7 @@ import Aos from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import pinguinIllustration from '../img/pinguin.png';
 
 const FORMSPREE_FORM_ID = "mbdnyyzn";
 const FORMSPREE_ENDPOINT = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
@@ -166,39 +167,13 @@ export default function Contact() {
             </form>
           </div>
 
-          {/* Kanan: ilustrasi lucu — amplop + sticker bintang + karakter mengintip, gaya flat MotherDuck */}
+          {/* Kanan: ilustrasi merpati pembawa pesan (gambar yang diekspor) */}
           <div className="justify-center hidden lg:col-span-2 lg:flex" data-aos="fade-left" data-aos-anchor-placement="top-bottom">
-            <svg viewBox="0 0 300 300" className="w-full max-w-xs icon-float" xmlns="http://www.w3.org/2000/svg">
-              {/* bayangan lembut di bawah amplop, biar komposisi tidak melayang kosong */}
-              <ellipse cx="150" cy="256" rx="88" ry="10" fill="#383838" opacity="0.08" />
-
-              {/* burung merpati mengintip dari BELAKANG sudut kiri-atas amplop — melambangkan "pembawa pesan",
-                  pas untuk section Contact. Badan & kepala terpisah biar bentuknya jelas terbaca sebagai burung */}
-              <ellipse cx="100" cy="128" rx="32" ry="24" fill="#FFFFFF" stroke="#383838" strokeWidth="4" />
-              <polygon points="112,122 130,108 140,126 120,136" fill="#70C1FE" stroke="#383838" strokeWidth="2" strokeLinejoin="round" />
-              <circle cx="88" cy="98" r="24" fill="#FFFFFF" stroke="#383838" strokeWidth="4" />
-              <circle cx="95" cy="92" r="3" fill="#383838" />
-              <polygon points="78,96 78,106 62,101" fill="#FEDE00" stroke="#383838" strokeWidth="2" strokeLinejoin="round" />
-
-              {/* amplop utama, digambar setelah karakter supaya cuma sedikit ujung bawahnya yang ketutup */}
-              <g transform="rotate(-3 150 199)">
-                <rect x="55" y="140" width="190" height="118" rx="16" fill="#FFFFFF" stroke="#383838" strokeWidth="5" />
-                <polyline points="55,140 150,205 245,140" fill="none" stroke="#383838" strokeWidth="5" strokeLinejoin="round" />
-              </g>
-
-              {/* pesawat kertas + jejak gerak, dikelompokkan rapat di ruang kosong kanan-atas
-                  supaya terasa "sedang terbang", bukan elemen nyasar sendirian */}
-              <g opacity="0.9">
-                <line x1="196" y1="94" x2="224" y2="88" stroke="#383838" strokeWidth="3" strokeLinecap="round" opacity="0.35" />
-                <line x1="206" y1="79" x2="231" y2="73" stroke="#383838" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-                <polygon points="235,58 282,77 235,96 248,77" fill="#383838" />
-              </g>
-
-              {/* sticker bintang teal, di ruang kosong kanan-bawah — tidak lagi menumpuk di sudut amplop */}
-              <g transform="translate(252,222) rotate(15)">
-                <path d="M22 0 29 15 44 22 29 29 22 44 15 29 0 22 15 15Z" fill="#15AA98" stroke="#383838" strokeWidth="3" strokeLinejoin="round"/>
-              </g>
-            </svg>
+            <img
+              src={pinguinIllustration}
+              alt="Merpati membawa pesan"
+              className="w-full max-w-xs icon-float drop-shadow-xl"
+            />
           </div>
         </div>
       </div>

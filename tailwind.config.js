@@ -86,7 +86,6 @@ export default {
         '4xl': '2.5rem',
       },
       fontFamily: {
-        poppins: ['Poppins'],
         heading: ['Sora', 'sans-serif'],
         sans: ['Inter', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
